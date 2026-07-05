@@ -1,0 +1,603 @@
+{
+  "datasets": [
+    {
+      "name": "44f50c4c",
+      "displayName": "teams_fouls_2022",
+      "config": {
+        "version": "1.1",
+        "source": "dbr_dev.trezio2005.teams_fouls_2022",
+        "dimensions": [
+          {
+            "name": "team",
+            "expr": "source.team",
+            "displayName": "Team"
+          },
+          {
+            "name": "total_fouls",
+            "expr": "source.total_fouls",
+            "displayName": "Total Fouls"
+          },
+          {
+            "name": "total_yellow_cards",
+            "expr": "source.total_yellow_cards",
+            "displayName": "Total Yellow Cards"
+          },
+          {
+            "name": "total_red_cards",
+            "expr": "source.total_red_cards",
+            "displayName": "Total Red Cards"
+          },
+          {
+            "name": "region",
+            "expr": "source.region",
+            "displayName": "Region"
+          }
+        ]
+      }
+    },
+    {
+      "name": "top5_red",
+      "displayName": "Top 5 Countries by Red Cards",
+      "queryLines": [
+        "SELECT team, total_red_cards FROM dbr_dev.trezio2005.teams_fouls_2022\n",
+        "WHERE total_red_cards > 0\n",
+        "ORDER BY total_red_cards DESC LIMIT 5"
+      ]
+    },
+    {
+      "name": "top5_yellow",
+      "displayName": "Top 5 Countries by Yellow Cards",
+      "queryLines": [
+        "SELECT team, total_yellow_cards FROM dbr_dev.trezio2005.teams_fouls_2022\n",
+        "ORDER BY total_yellow_cards DESC LIMIT 5"
+      ]
+    },
+    {
+      "name": "top5_fouls",
+      "displayName": "Top 5 Countries by Fouls",
+      "queryLines": [
+        "SELECT team, total_fouls FROM dbr_dev.trezio2005.teams_fouls_2022\n",
+        "ORDER BY total_fouls DESC LIMIT 5"
+      ]
+    },
+    {
+      "name": "fouls_by_region",
+      "displayName": "Total Fouls by Region",
+      "queryLines": [
+        "SELECT region, SUM(total_fouls) AS total_fouls, COUNT(DISTINCT team) AS num_countries\n",
+        "FROM dbr_dev.trezio2005.teams_fouls_2022\n",
+        "WHERE region IS NOT NULL\n",
+        "GROUP BY region\n",
+        "ORDER BY total_fouls DESC"
+      ]
+    },
+    {
+      "name": "avg_fouls_region",
+      "displayName": "Avg Fouls per Team by Region",
+      "queryLines": [
+        "SELECT region, ROUND(AVG(total_fouls), 1) AS avg_fouls_per_team\n",
+        "FROM dbr_dev.trezio2005.teams_fouls_2022\n",
+        "WHERE region IS NOT NULL\n",
+        "GROUP BY region\n",
+        "ORDER BY avg_fouls_per_team DESC"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "c4276e98",
+      "displayName": "Lab1 Dashboard",
+      "layout": [
+        {
+          "widget": {
+            "name": "title_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## 2022 FIFA World Cup — Cards & Fouls Analysis (In group stage)\n",
+                "\n",
+                "Top 5 countries by fouls, yellow cards, and red cards, plus a regional breakdown of total fouls."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_top5_fouls",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "top5_fouls",
+                  "fields": [
+                    {
+                      "name": "total_fouls",
+                      "expression": "`total_fouls`"
+                    },
+                    {
+                      "name": "team",
+                      "expression": "`team`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 5 Countries by Fouls",
+                "showTitle": true
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "selectionColor"
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "total_fouls",
+                  "displayName": "Total fouls",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "team",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 4,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_top5_yellow",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "top5_yellow",
+                  "fields": [
+                    {
+                      "name": "total_yellow_cards",
+                      "expression": "`total_yellow_cards`"
+                    },
+                    {
+                      "name": "team",
+                      "expression": "`team`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 5 Countries by Yellow Cards",
+                "showTitle": true
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "total_yellow_cards",
+                  "displayName": "Yellow cards",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "team",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 4,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_top5_red",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "top5_red",
+                  "fields": [
+                    {
+                      "name": "total_red_cards",
+                      "expression": "`total_red_cards`"
+                    },
+                    {
+                      "name": "team",
+                      "expression": "`team`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 5 Countries by Red Cards",
+                "showTitle": true
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "total_red_cards",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "team",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 2,
+            "width": 4,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "pie_fouls_region",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "fouls_by_region",
+                  "fields": [
+                    {
+                      "name": "total_fouls",
+                      "expression": "`total_fouls`"
+                    },
+                    {
+                      "name": "region",
+                      "expression": "`region`"
+                    },
+                    {
+                      "name": "num_countries",
+                      "expression": "`num_countries`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Total Fouls by Region",
+                "showTitle": true,
+                "showDescription": false
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "total_fouls",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "region",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                },
+                "extra": [
+                  {
+                    "fieldName": "num_countries"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 9,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "fd1d5753",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "avg_fouls_region",
+                  "fields": [
+                    {
+                      "name": "avg_fouls_per_team",
+                      "expression": "`avg_fouls_per_team`"
+                    },
+                    {
+                      "name": "region",
+                      "expression": "`region`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Avg Fouls per Team by Region",
+                "showTitle": true
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "avg_fouls_per_team",
+                  "axis": {
+                    "title": "Avg Fouls per Team"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "region",
+                  "axis": {
+                    "title": "Region"
+                  },
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 9,
+            "width": 3,
+            "height": 9
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
