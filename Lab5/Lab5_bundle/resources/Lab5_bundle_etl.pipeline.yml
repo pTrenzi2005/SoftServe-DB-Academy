@@ -1,0 +1,17 @@
+resources:
+  pipelines:
+    pipeline_etl_lab5:
+      name: ETL_lab5_${bundle.target}
+      libraries:
+        - notebook:
+            path: ../src/notebooks/declarative_csv.ipynb
+        - notebook:
+            path: ../src/notebooks/declarative_streaming.ipynb
+        - notebook:
+            path: ../src/notebooks/declarative_silver.ipynb
+      schema: ${var.schema}
+      continuous: false
+      photon: true
+      channel: CURRENT
+      catalog: ${var.catalog}
+      serverless: true
